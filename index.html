@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>公益出租人租賃所得簡易試算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --b-bg: #EEF7F1;
+    --b-bg-soft: #FFFFFF;
+    --b-ink: #153528;
+    --b-ink-soft: #587165;
+    --b-line: #CFE3D6;
+    --b-primary: #007A3D;
+    --b-primary-d: #005F30;
+    --b-accent: #00A651;
+    --b-warm: #C99A45;
+    --b-warm-d: #A77B2B;
+    --b-pink: #F0568D;
+    --shadow-card: 0 10px 30px rgba(0,122,61,0.10), 0 2px 6px rgba(21,53,40,0.05);
+    --shadow-btn: 0 6px 16px rgba(0,122,61,0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--b-bg);
+    color: var(--b-ink);
+    line-height: 1.6;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(0,122,61,0.16) 0%, transparent 50%),
+      radial-gradient(circle at 85% 90%, rgba(0,166,81,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(201,154,69,0.08) 0%, transparent 70%);
+  }
+
+  header {
+    background: linear-gradient(135deg, #005F30 0%, #007A3D 52%, #00A651 100%);
+    color: white;
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 20px rgba(0,122,61,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before, header::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+  }
+  header::before { top: -30px; right: -30px; width: 150px; height: 150px; }
+  header::after { bottom: -40px; left: 30%; width: 100px; height: 100px; background: rgba(255,255,255,0.08); }
+  header .logo {
+    width: 56px;
+    height: 56px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+  }
+  header .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.35;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  header .subtitle {
+    margin-left: auto;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 3px;
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+  }
+
+  .container { max-width: 980px; margin: 32px auto; padding: 0 20px; }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  .tab {
+    flex-shrink: 0;
+    padding: 12px 18px;
+    background: white;
+    color: var(--b-ink-soft);
+    border: 1.5px solid var(--b-line);
+    border-radius: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .tab:hover { background: var(--b-bg); color: var(--b-primary); transform: translateY(-1px); }
+  .tab.active {
+    background: var(--b-primary);
+    color: white;
+    border-color: var(--b-primary);
+    box-shadow: 0 4px 12px rgba(0,122,61,0.35);
+  }
+
+  .card {
+    background: var(--b-bg-soft);
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(207,227,214,0.7);
+  }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--b-ink);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .panel-title::before {
+    content: '';
+    width: 5px;
+    height: 24px;
+    background: linear-gradient(180deg, var(--b-primary), var(--b-accent));
+    border-radius: 3px;
+    flex: 0 0 auto;
+  }
+  .panel-sub {
+    font-size: 13px;
+    color: var(--b-ink-soft);
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--b-line);
+    padding-left: 15px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .row.single { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--b-ink);
+    letter-spacing: 0.3px;
+  }
+  .field label .hint {
+    color: var(--b-ink-soft);
+    font-weight: 400;
+    margin-left: 4px;
+    font-size: 12px;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: 13px 16px;
+    background: #F8FCF9;
+    border: 1.5px solid var(--b-line);
+    border-radius: 10px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 15px;
+    color: var(--b-ink);
+    transition: all 0.2s;
+  }
+  input:focus {
+    outline: none;
+    background: white;
+    border-color: var(--b-primary);
+    box-shadow: 0 0 0 3px rgba(0,122,61,0.15);
+  }
+  input::placeholder { color: #9FB4A8; font-weight: 300; }
+
+  .rent-list {
+    display: grid;
+    gap: 10px;
+    margin: 14px 0 4px;
+  }
+  .rent-row {
+    display: grid;
+    grid-template-columns: 54px 1fr 150px 34px;
+    gap: 10px;
+    align-items: end;
+    padding: 12px;
+    border: 1px solid var(--b-line);
+    border-radius: 12px;
+    background: #F8FCF9;
+  }
+  .rent-no {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #E8F5EC;
+    color: var(--b-primary-d);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+  }
+  .icon-btn {
+    width: 34px;
+    height: 42px;
+    border: 1px solid var(--b-line);
+    border-radius: 9px;
+    background: white;
+    color: var(--b-ink-soft);
+    cursor: pointer;
+    font-size: 18px;
+  }
+  .icon-btn:hover { border-color: var(--b-pink); color: var(--b-pink); }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .submit {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--b-primary), var(--b-primary-d));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-btn);
+  }
+  .submit:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,122,61,0.45); }
+  .submit.secondary {
+    background: white;
+    color: var(--b-primary-d);
+    border: 1.5px solid var(--b-line);
+    box-shadow: none;
+  }
+
+  .info {
+    background: linear-gradient(135deg, rgba(0,122,61,0.10), rgba(0,166,81,0.08));
+    border: 1px dashed #4FBC78;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--b-ink-soft);
+    margin: 12px 0;
+  }
+  .info strong { color: var(--b-ink); }
+
+  .formula {
+    background: linear-gradient(135deg, #E8F5EC, #F7F1E6);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+    text-align: center;
+    border: 1px solid rgba(0,122,61,0.25);
+  }
+  .formula-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    color: var(--b-primary-d);
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+  .formula-body { font-size: 14px; color: var(--b-ink); line-height: 1.9; }
+  .formula-body code {
+    background: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--b-primary-d);
+    font-weight: 600;
+    border: 1px solid var(--b-line);
+  }
+
+  .result {
+    margin-top: 24px;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(0,122,61,0.08), rgba(0,166,81,0.08));
+    border-radius: 14px;
+    border: 1.5px solid rgba(0,122,61,0.2);
+    display: none;
+  }
+  .result.show { display: block; animation: fadeIn 0.4s; }
+  .result-headline {
+    font-size: 15px;
+    color: var(--b-ink-soft);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+  .result-big {
+    font-family: 'Poppins', sans-serif;
+    font-size: 46px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--b-primary), var(--b-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .result-big .unit {
+    font-size: 18px;
+    margin-left: 6px;
+    font-family: 'Noto Sans TC';
+    font-weight: 600;
+    -webkit-text-fill-color: var(--b-ink);
+  }
+  .result-note {
+    font-size: 13px;
+    color: var(--b-ink-soft);
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--b-line);
+  }
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+  }
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    font-size: 14px;
+    border-bottom: 1px dotted var(--b-line);
+  }
+  .result-item .k { color: var(--b-ink-soft); }
+  .result-item .v { color: var(--b-ink); font-weight: 700; text-align: right; }
+
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+  .compare th, .compare td {
+    padding: 11px 10px;
+    border-bottom: 1px solid var(--b-line);
+    text-align: right;
+  }
+  .compare th:first-child, .compare td:first-child { text-align: left; }
+  .compare th { color: var(--b-ink-soft); font-weight: 600; background: rgba(255,255,255,0.7); }
+
+  .judge {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.7;
+    background: rgba(201,154,69,0.14);
+    color: var(--b-warm-d);
+    border-left: 4px solid var(--b-warm);
+  }
+  .judge strong { display: block; margin-bottom: 4px; color: var(--b-ink); }
+
+  footer {
+    text-align: center;
+    padding: 36px 20px 28px;
+    color: var(--b-ink-soft);
+    font-size: 12px;
+    line-height: 1.9;
+  }
+
+  @media (max-width: 700px) {
+    .card { padding: 24px 18px; }
+    .panel-title { font-size: 22px; }
+    .row, .actions, .result-grid { grid-template-columns: 1fr; }
+    .result-big { font-size: 36px; }
+    .rent-row { grid-template-columns: 44px 1fr 1fr 34px; gap: 8px; }
+    .rent-row .field label { font-size: 12px; }
+    header { padding: 14px 16px; gap: 10px; }
+    header .logo { width: 46px; height: 46px; }
+    header h1 { font-size: 16px; letter-spacing: 0.5px; }
+    header .subtitle { display: none; }
+    .compare { font-size: 12px; }
+    .compare th, .compare td { padding: 9px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><img src="assets/lingxiang-logo.png" alt="嶺翔團隊 Logo"></div>
+  <h1>公益出租人租賃所得簡易試算</h1>
+  <div class="subtitle">PUBLIC LANDLORD · TAX</div>
+</header>
+
+<div class="container">
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-target="p-calc">🏛 所得試算</button>
+    <button class="tab" data-target="p-formula">📐 公式說明</button>
+    <button class="tab" data-target="p-note">📌 注意事項</button>
+  </nav>
+
+  <div class="card">
+    <section class="panel active" id="p-calc">
+      <h2 class="panel-title">公益出租人節稅試算</h2>
+      <p class="panel-sub">依原 Excel「公益出租人租賃所得簡易計算表」邏輯製作，最多可輸入 15 筆租金。</p>
+
+      <div class="row single">
+        <div class="field">
+          <label>綜合所得淨額 <span class="hint">不含下列租賃所得，元</span></label>
+          <input type="number" id="netIncome" value="0" min="0" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="info">請在下方輸入每筆物件的<strong>每月租金</strong>與<strong>出租期間</strong>。公益出租免稅額依原表設定為每月租金與 15,000 元取低值。</div>
+
+      <div class="rent-list" id="rentList"></div>
+
+      <div class="actions">
+        <button class="submit secondary" type="button" onclick="addRentRow()">新增一筆租金</button>
+        <button class="submit" type="button" onclick="calculate()">開始試算</button>
+      </div>
+
+      <div class="result show" id="result">
+        <div class="result-headline">預估節稅利益</div>
+        <div class="result-big"><span id="saving">0</span><span class="unit">元</span></div>
+        <div class="result-note" id="summaryNote">輸入租金後會即時更新試算結果。</div>
+        <div class="result-grid">
+          <div class="result-item"><span class="k">公益出租人租賃所得</span><span class="v" id="publicRentIncome">0 元</span></div>
+          <div class="result-item"><span class="k">一般租賃所得</span><span class="v" id="normalRentIncome">0 元</span></div>
+          <div class="result-item"><span class="k">公益出租人應納稅額</span><span class="v" id="publicTax">0 元</span></div>
+          <div class="result-item"><span class="k">非公益出租人應納稅額</span><span class="v" id="normalTax">0 元</span></div>
+        </div>
+
+        <table class="compare" aria-label="公益出租人與非公益出租人試算比較">
+          <thead>
+            <tr>
+              <th>身分</th>
+              <th>租賃所得</th>
+              <th>含租賃所得淨額</th>
+              <th>稅率</th>
+              <th>累進差額</th>
+              <th>應納稅額</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>非公益出租人</td>
+              <td id="normalLease">0</td>
+              <td id="normalTotal">0</td>
+              <td id="normalRate">5%</td>
+              <td id="normalDiff">0</td>
+              <td id="normalTaxTable">0</td>
+            </tr>
+            <tr>
+              <td>公益出租人</td>
+              <td id="publicLease">0</td>
+              <td id="publicTotal">0</td>
+              <td id="publicRate">5%</td>
+              <td id="publicDiff">0</td>
+              <td id="publicTaxTable">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="p-formula">
+      <h2 class="panel-title">公式說明</h2>
+      <p class="panel-sub">這裡保留 Excel 原本邏輯，方便你跟客戶解釋差異。</p>
+      <div class="formula">
+        <div class="formula-title">PUBLIC LANDLORD</div>
+        <div class="formula-body">
+          公益出租人租賃所得 = <code>(每月租金 − min(每月租金, 15,000))</code> × <code>出租月數</code> × <code>(1 − 43%)</code>
+        </div>
+      </div>
+      <div class="formula">
+        <div class="formula-title">NORMAL LANDLORD</div>
+        <div class="formula-body">
+          一般租賃所得 = <code>每月租金</code> × <code>出租月數</code> × <code>(1 − 43%)</code>
+        </div>
+      </div>
+      <div class="formula">
+        <div class="formula-title">TAX</div>
+        <div class="formula-body">
+          應納稅額 = <code>max(0, rounddown(含租賃所得淨額 × 適用稅率 − 累進差額))</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="p-note">
+      <h2 class="panel-title">注意事項</h2>
+      <p class="panel-sub">這份 HTML 是從你提供的 Excel 轉成網頁版，不是新版法規查詢工具。</p>
+      <div class="judge">
+        <strong>試算基準</strong>
+        原表註明依 112 年度，也就是與 111 年度相同的課稅級距，以及夫妻各類所得合併方式做簡易估算。
+      </div>
+      <div class="judge">
+        <strong>使用邊界</strong>
+        綜合所得稅實際會受到免稅額、扣除額、基本所得額與其他所得類別影響，本工具只適合做公益出租租賃所得差異的快速估算。
+      </div>
+      <div class="judge">
+        <strong>正式申報</strong>
+        實際金額仍應以國稅局或稽徵機關核定為準；若要對外公開使用，建議再確認當年度級距與公益出租人免稅額規定。
+      </div>
+    </section>
+  </div>
+</div>
+
+<footer>
+  © 2026 公益出租人租賃所得簡易試算｜僅供參考，實際金額以稽徵機關核定為準
+</footer>
+
+<script>
+  const MAX_ROWS = 15;
+  const EXEMPTION_LIMIT = 15000;
+  const EXPENSE_RATE = 0.43;
+
+  document.querySelectorAll('#tabs .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#tabs .tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.target).classList.add('active');
+    });
+  });
+
+  function fmt(n, d = 0) {
+    if (!Number.isFinite(n)) return '0';
+    return Math.round(n).toLocaleString('zh-TW', { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+
+  function roundDown(n) {
+    return Math.floor(Number.isFinite(n) ? n : 0);
+  }
+
+  function getTaxInfo(income) {
+    if (income < 560001) return { rate: 0.05, diff: 0 };
+    if (income < 1260001) return { rate: 0.12, diff: 39200 };
+    if (income < 2520001) return { rate: 0.20, diff: 140000 };
+    if (income < 4720001) return { rate: 0.30, diff: 392000 };
+    return { rate: 0.40, diff: 864000 };
+  }
+
+  function taxableAmount(income) {
+    const taxInfo = getTaxInfo(income);
+    return Math.max(0, roundDown(income * taxInfo.rate - taxInfo.diff));
+  }
+
+  function addRentRow(monthlyRent = 0, months = 0) {
+    const list = document.getElementById('rentList');
+    if (list.children.length >= MAX_ROWS) {
+      alert('原試算表最多 15 筆租金明細');
+      return;
+    }
+
+    const index = list.children.length + 1;
+    const row = document.createElement('div');
+    row.className = 'rent-row';
+    row.innerHTML = `
+      <div class="rent-no">${index}</div>
+      <div class="field">
+        <label>每月租金 <span class="hint">元</span></label>
+        <input type="number" class="rent-input" value="${monthlyRent}" min="0" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label>出租期間 <span class="hint">月</span></label>
+        <input type="number" class="month-input" value="${months}" min="0" max="12" step="1" inputmode="numeric">
+      </div>
+      <button class="icon-btn" type="button" aria-label="刪除此筆" onclick="removeRentRow(this)">×</button>
+    `;
+    row.querySelectorAll('input').forEach(input => input.addEventListener('input', calculate));
+    list.appendChild(row);
+    renumberRows();
+    calculate();
+  }
+
+  function removeRentRow(button) {
+    const list = document.getElementById('rentList');
+    if (list.children.length <= 1) {
+      list.querySelector('.rent-input').value = 0;
+      list.querySelector('.month-input').value = 0;
+    } else {
+      button.closest('.rent-row').remove();
+    }
+    renumberRows();
+    calculate();
+  }
+
+  function renumberRows() {
+    document.querySelectorAll('.rent-no').forEach((node, idx) => {
+      node.textContent = idx + 1;
+    });
+  }
+
+  function collectRows() {
+    return [...document.querySelectorAll('.rent-row')].map(row => {
+      const rent = Math.max(0, Number(row.querySelector('.rent-input').value) || 0);
+      const monthsRaw = Number(row.querySelector('.month-input').value) || 0;
+      const months = Math.min(12, Math.max(0, Math.trunc(monthsRaw)));
+      row.querySelector('.month-input').value = months;
+      return { rent, months };
+    });
+  }
+
+  function calculate() {
+    const netIncome = Math.max(0, Number(document.getElementById('netIncome').value) || 0);
+    const rows = collectRows();
+
+    let publicRent = 0;
+    let normalRent = 0;
+    rows.forEach(({ rent, months }) => {
+      const exemptAmount = Math.min(rent, EXEMPTION_LIMIT);
+      publicRent += roundDown((rent - exemptAmount) * months * (1 - EXPENSE_RATE));
+      normalRent += roundDown(rent * months * (1 - EXPENSE_RATE));
+    });
+
+    const normalTotal = netIncome + normalRent;
+    const publicTotal = netIncome + publicRent;
+    const normalInfo = getTaxInfo(normalTotal);
+    const publicInfo = getTaxInfo(publicTotal);
+    const normalTaxValue = taxableAmount(normalTotal);
+    const publicTaxValue = taxableAmount(publicTotal);
+    const saving = normalTaxValue - publicTaxValue;
+
+    document.getElementById('saving').textContent = fmt(saving);
+    document.getElementById('summaryNote').textContent = saving > 0
+      ? `本次估算公益出租人較一般出租人少繳約 ${fmt(saving)} 元。`
+      : '目前輸入條件下，公益出租與一般出租估算稅額相同。';
+    document.getElementById('publicRentIncome').textContent = `${fmt(publicRent)} 元`;
+    document.getElementById('normalRentIncome').textContent = `${fmt(normalRent)} 元`;
+    document.getElementById('publicTax').textContent = `${fmt(publicTaxValue)} 元`;
+    document.getElementById('normalTax').textContent = `${fmt(normalTaxValue)} 元`;
+
+    document.getElementById('normalLease').textContent = fmt(normalRent);
+    document.getElementById('normalTotal').textContent = fmt(normalTotal);
+    document.getElementById('normalRate').textContent = `${normalInfo.rate * 100}%`;
+    document.getElementById('normalDiff').textContent = fmt(normalInfo.diff);
+    document.getElementById('normalTaxTable').textContent = fmt(normalTaxValue);
+
+    document.getElementById('publicLease').textContent = fmt(publicRent);
+    document.getElementById('publicTotal').textContent = fmt(publicTotal);
+    document.getElementById('publicRate').textContent = `${publicInfo.rate * 100}%`;
+    document.getElementById('publicDiff').textContent = fmt(publicInfo.diff);
+    document.getElementById('publicTaxTable').textContent = fmt(publicTaxValue);
+  }
+
+  document.getElementById('netIncome').addEventListener('input', calculate);
+  addRentRow(0, 12);
+</script>
+
+</body>
+</html>
