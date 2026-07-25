@@ -3,417 +3,674 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>公益出租人租賃所得簡易試算</title>
+<meta name="description" content="桃園房東稅務、社會住宅包租代管與房客資格初步試算工具。">
+<title>桃園租屋與社會住宅試算工具</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --b-bg: #EEF7F1;
-    --b-bg-soft: #FFFFFF;
-    --b-ink: #153528;
-    --b-ink-soft: #587165;
-    --b-line: #CFE3D6;
-    --b-primary: #007A3D;
-    --b-primary-d: #005F30;
-    --b-accent: #00A651;
-    --b-warm: #C99A45;
-    --b-warm-d: #A77B2B;
-    --b-pink: #F0568D;
-    --shadow-card: 0 10px 30px rgba(0,122,61,0.10), 0 2px 6px rgba(21,53,40,0.05);
-    --shadow-btn: 0 6px 16px rgba(0,122,61,0.35);
+    --bg: #f3f6f4;
+    --surface: #ffffff;
+    --surface-soft: #f8faf9;
+    --ink: #17372a;
+    --ink-soft: #5c7167;
+    --line: #d5e1da;
+    --green: #007a3d;
+    --green-dark: #005f30;
+    --green-soft: #e7f4eb;
+    --gold: #b88832;
+    --gold-soft: #fbf3e3;
+    --blue: #256b86;
+    --blue-soft: #e8f3f7;
+    --red: #b54b51;
+    --red-soft: #faecee;
+    --shadow: 0 10px 28px rgba(18, 58, 39, 0.09);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html { scroll-behavior: smooth; }
+
   body {
-    font-family: 'Noto Sans TC', sans-serif;
-    background: var(--b-bg);
-    color: var(--b-ink);
-    line-height: 1.6;
     min-height: 100vh;
-    background-image:
-      radial-gradient(circle at 15% 10%, rgba(0,122,61,0.16) 0%, transparent 50%),
-      radial-gradient(circle at 85% 90%, rgba(0,166,81,0.12) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(201,154,69,0.08) 0%, transparent 70%);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans TC", sans-serif;
+    line-height: 1.6;
   }
 
+  button, input, select { font: inherit; }
+  button { touch-action: manipulation; }
+  a { color: var(--green-dark); }
+
   header {
-    background: linear-gradient(135deg, #005F30 0%, #007A3D 52%, #00A651 100%);
-    color: white;
-    padding: 22px 24px;
+    min-height: 84px;
+    padding: 16px 24px;
     display: flex;
     align-items: center;
     gap: 14px;
-    box-shadow: 0 4px 20px rgba(0,122,61,0.25);
-    position: relative;
-    overflow: hidden;
+    background: var(--green-dark);
+    color: white;
+    box-shadow: 0 3px 16px rgba(0, 65, 32, 0.22);
   }
-  header::before, header::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.10);
-  }
-  header::before { top: -30px; right: -30px; width: 150px; height: 150px; }
-  header::after { bottom: -40px; left: 30%; width: 100px; height: 100px; background: rgba(255,255,255,0.08); }
-  header .logo {
-    width: 56px;
-    height: 56px;
-    background: white;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  .logo {
+    width: 52px;
+    height: 52px;
     padding: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    position: relative;
-    z-index: 1;
     flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    background: white;
+    border-radius: 8px;
   }
-  header .logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+  .logo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+  }
+
+  .header-copy { min-width: 0; }
+
   header h1 {
     font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 1px;
     line-height: 1.35;
-    position: relative;
-    z-index: 1;
-    flex: 1;
-    min-width: 0;
+    letter-spacing: 0;
     overflow-wrap: anywhere;
   }
-  header .subtitle {
-    margin-left: auto;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    color: rgba(255,255,255,0.85);
-    letter-spacing: 3px;
-    position: relative;
-    z-index: 1;
-    font-weight: 500;
+
+  .header-meta {
+    margin-top: 3px;
+    color: rgba(255, 255, 255, 0.76);
+    font-family: "Poppins", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0;
   }
 
-  .container { max-width: 980px; margin: 32px auto; padding: 0 20px; }
+  .container {
+    width: min(1120px, 100%);
+    margin: 28px auto;
+    padding: 0 20px;
+  }
+
+  .version-bar {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--ink-soft);
+    font-size: 12px;
+  }
+
+  .version-badge {
+    padding: 5px 9px;
+    border: 1px solid #b9d5c4;
+    border-radius: 999px;
+    background: var(--green-soft);
+    color: var(--green-dark);
+    font-weight: 700;
+    white-space: nowrap;
+  }
 
   .tabs {
+    margin-bottom: 18px;
+    padding-bottom: 4px;
     display: flex;
     gap: 8px;
-    margin-bottom: 24px;
     overflow-x: auto;
-    padding-bottom: 4px;
     scrollbar-width: thin;
   }
+
   .tab {
-    flex-shrink: 0;
-    padding: 12px 18px;
-    background: white;
-    color: var(--b-ink-soft);
-    border: 1.5px solid var(--b-line);
-    border-radius: 12px;
-    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 44px;
+    padding: 10px 16px;
+    flex: 0 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink-soft);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
-  }
-  .tab:hover { background: var(--b-bg); color: var(--b-primary); transform: translateY(-1px); }
-  .tab.active {
-    background: var(--b-primary);
-    color: white;
-    border-color: var(--b-primary);
-    box-shadow: 0 4px 12px rgba(0,122,61,0.35);
+    transition: border-color 0.18s, background 0.18s, color 0.18s;
   }
 
-  .card {
-    background: var(--b-bg-soft);
-    border-radius: 20px;
-    padding: 36px;
-    box-shadow: var(--shadow-card);
-    border: 1px solid rgba(207,227,214,0.7);
+  .tab:hover {
+    border-color: #8bb89c;
+    color: var(--green-dark);
   }
+
+  .tab.active {
+    border-color: var(--green);
+    background: var(--green);
+    color: white;
+  }
+
+  .workspace {
+    padding: 30px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
   .panel { display: none; }
-  .panel.active { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+  .panel.active { display: block; animation: enter 0.22s ease; }
+
+  @keyframes enter {
+    from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
+  .panel-head {
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
   .panel-title {
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--b-ink);
-    margin-bottom: 6px;
-    letter-spacing: 0.5px;
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 24px;
+    line-height: 1.35;
+    letter-spacing: 0;
   }
+
   .panel-title::before {
-    content: '';
+    content: "";
     width: 5px;
     height: 24px;
-    background: linear-gradient(180deg, var(--b-primary), var(--b-accent));
-    border-radius: 3px;
     flex: 0 0 auto;
-  }
-  .panel-sub {
-    font-size: 13px;
-    color: var(--b-ink-soft);
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--b-line);
-    padding-left: 15px;
+    border-radius: 3px;
+    background: var(--green);
   }
 
-  .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    margin-bottom: 18px;
+  .panel-sub {
+    margin-top: 7px;
+    padding-left: 15px;
+    color: var(--ink-soft);
+    font-size: 13px;
   }
-  .row.single { grid-template-columns: 1fr; }
-  .field { display: flex; flex-direction: column; gap: 8px; }
+
+  .section-title {
+    margin: 26px 0 12px;
+    font-size: 17px;
+    letter-spacing: 0;
+  }
+
+  .section-title:first-child { margin-top: 0; }
+
+  .grid-2,
+  .grid-3,
+  .result-grid,
+  .benefit-grid,
+  .notice-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .grid-2, .result-grid, .notice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-3, .benefit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .field {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
   .field label {
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .hint {
+    margin-left: 3px;
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  input[type="number"],
+  select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface-soft);
+    color: var(--ink);
+    font-size: 15px;
+  }
+
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--green);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 122, 61, 0.12);
+  }
+
+  .seg {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface-soft);
+  }
+
+  .seg button {
+    min-height: 36px;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--ink-soft);
     font-size: 13px;
     font-weight: 600;
-    color: var(--b-ink);
-    letter-spacing: 0.3px;
-  }
-  .field label .hint {
-    color: var(--b-ink-soft);
-    font-weight: 400;
-    margin-left: 4px;
-    font-size: 12px;
-  }
-  input[type="number"] {
-    width: 100%;
-    padding: 13px 16px;
-    background: #F8FCF9;
-    border: 1.5px solid var(--b-line);
-    border-radius: 10px;
-    font-family: 'Noto Sans TC', sans-serif;
-    font-size: 15px;
-    color: var(--b-ink);
-    transition: all 0.2s;
-  }
-  input:focus {
-    outline: none;
-    background: white;
-    border-color: var(--b-primary);
-    box-shadow: 0 0 0 3px rgba(0,122,61,0.15);
-  }
-  input::placeholder { color: #9FB4A8; font-weight: 300; }
-
-  .rent-list {
-    display: grid;
-    gap: 10px;
-    margin: 14px 0 4px;
-  }
-  .rent-row {
-    display: grid;
-    grid-template-columns: 54px 1fr 150px 34px;
-    gap: 10px;
-    align-items: end;
-    padding: 12px;
-    border: 1px solid var(--b-line);
-    border-radius: 12px;
-    background: #F8FCF9;
-  }
-  .rent-no {
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9px;
-    background: #E8F5EC;
-    color: var(--b-primary-d);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-  }
-  .icon-btn {
-    width: 34px;
-    height: 42px;
-    border: 1px solid var(--b-line);
-    border-radius: 9px;
-    background: white;
-    color: var(--b-ink-soft);
     cursor: pointer;
-    font-size: 18px;
   }
-  .icon-btn:hover { border-color: var(--b-pink); color: var(--b-pink); }
 
-  .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 20px;
-  }
-  .submit {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, var(--b-primary), var(--b-primary-d));
+  .seg button.active {
+    background: var(--green);
     color: white;
-    border: none;
-    border-radius: 12px;
-    font-family: 'Noto Sans TC', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: var(--shadow-btn);
   }
-  .submit:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,122,61,0.45); }
-  .submit.secondary {
-    background: white;
-    color: var(--b-primary-d);
-    border: 1.5px solid var(--b-line);
-    box-shadow: none;
+
+  .info,
+  .warning,
+  .success-note {
+    margin: 16px 0;
+    padding: 13px 15px;
+    border-radius: 6px;
+    font-size: 13px;
   }
 
   .info {
-    background: linear-gradient(135deg, rgba(0,122,61,0.10), rgba(0,166,81,0.08));
-    border: 1px dashed #4FBC78;
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: var(--b-ink-soft);
-    margin: 12px 0;
-  }
-  .info strong { color: var(--b-ink); }
-
-  .formula {
-    background: linear-gradient(135deg, #E8F5EC, #F7F1E6);
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-bottom: 22px;
-    text-align: center;
-    border: 1px solid rgba(0,122,61,0.25);
-  }
-  .formula-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 16px;
-    color: var(--b-primary-d);
-    font-weight: 700;
-    letter-spacing: 3px;
-    margin-bottom: 8px;
-  }
-  .formula-body { font-size: 14px; color: var(--b-ink); line-height: 1.9; }
-  .formula-body code {
-    background: white;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-family: 'Poppins', sans-serif;
-    color: var(--b-primary-d);
-    font-weight: 600;
-    border: 1px solid var(--b-line);
+    border: 1px solid #b7d6c3;
+    background: var(--green-soft);
+    color: #345f49;
   }
 
-  .result {
-    margin-top: 24px;
-    padding: 24px;
-    background: linear-gradient(135deg, rgba(0,122,61,0.08), rgba(0,166,81,0.08));
-    border-radius: 14px;
-    border: 1.5px solid rgba(0,122,61,0.2);
-    display: none;
+  .warning {
+    border: 1px solid #e3c78f;
+    background: var(--gold-soft);
+    color: #73571f;
   }
-  .result.show { display: block; animation: fadeIn 0.4s; }
-  .result-headline {
-    font-size: 15px;
-    color: var(--b-ink-soft);
-    margin-bottom: 6px;
-    letter-spacing: 1px;
-    font-weight: 500;
+
+  .success-note {
+    border: 1px solid #a9ccd8;
+    background: var(--blue-soft);
+    color: #285d71;
   }
-  .result-big {
-    font-family: 'Poppins', sans-serif;
-    font-size: 46px;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--b-primary), var(--b-accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.1;
-    margin-bottom: 4px;
-  }
-  .result-big .unit {
-    font-size: 18px;
-    margin-left: 6px;
-    font-family: 'Noto Sans TC';
-    font-weight: 600;
-    -webkit-text-fill-color: var(--b-ink);
-  }
-  .result-note {
-    font-size: 13px;
-    color: var(--b-ink-soft);
-    margin-bottom: 18px;
-    padding-bottom: 14px;
-    border-bottom: 1px dashed var(--b-line);
-  }
-  .result-grid {
+
+  .rent-list {
+    margin-top: 12px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px 24px;
+    gap: 9px;
   }
+
+  .rent-row {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 140px 38px;
+    gap: 10px;
+    align-items: end;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface-soft);
+  }
+
+  .rent-no {
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    background: var(--green-soft);
+    color: var(--green-dark);
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+  }
+
+  .icon-btn {
+    width: 38px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: white;
+    color: var(--red);
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .actions {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    min-height: 48px;
+    padding: 12px 16px;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .primary-btn {
+    border: 1px solid var(--green);
+    background: var(--green);
+    color: white;
+    box-shadow: 0 5px 14px rgba(0, 122, 61, 0.24);
+  }
+
+  .secondary-btn {
+    border: 1px solid var(--line);
+    background: white;
+    color: var(--green-dark);
+  }
+
+  .result-box {
+    margin-top: 22px;
+    padding: 20px;
+    border: 1px solid #b9d8c5;
+    border-radius: 8px;
+    background: #f4faf6;
+  }
+
+  .result-headline {
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .result-big {
+    margin: 2px 0 5px;
+    color: var(--green-dark);
+    font-family: "Poppins", "Noto Sans TC", sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .result-big .unit {
+    margin-left: 5px;
+    color: var(--ink);
+    font-family: "Noto Sans TC", sans-serif;
+    font-size: 17px;
+  }
+
+  .result-note {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--line);
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
   .result-item {
+    min-width: 0;
+    padding: 10px 0;
     display: flex;
     justify-content: space-between;
-    gap: 16px;
-    padding: 10px 0;
-    font-size: 14px;
-    border-bottom: 1px dotted var(--b-line);
-  }
-  .result-item .k { color: var(--b-ink-soft); }
-  .result-item .v { color: var(--b-ink); font-weight: 700; text-align: right; }
-
-  .compare {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 16px;
+    gap: 12px;
+    border-bottom: 1px dotted var(--line);
     font-size: 13px;
   }
-  .compare th, .compare td {
-    padding: 11px 10px;
-    border-bottom: 1px solid var(--b-line);
-    text-align: right;
-  }
-  .compare th:first-child, .compare td:first-child { text-align: left; }
-  .compare th { color: var(--b-ink-soft); font-weight: 600; background: rgba(255,255,255,0.7); }
 
-  .judge {
-    margin-top: 18px;
-    padding: 14px 18px;
-    border-radius: 10px;
-    font-size: 14px;
-    line-height: 1.7;
-    background: rgba(201,154,69,0.14);
-    color: var(--b-warm-d);
-    border-left: 4px solid var(--b-warm);
+  .result-item .key { color: var(--ink-soft); }
+  .result-item .value { font-weight: 700; text-align: right; overflow-wrap: anywhere; }
+
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 7px;
   }
-  .judge strong { display: block; margin-bottom: 4px; color: var(--b-ink); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .tax-table { min-width: 820px; }
+  .scheme-table { min-width: 920px; }
+
+  th, td {
+    padding: 11px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    text-align: left;
+  }
+
+  th {
+    background: #eef4f0;
+    color: var(--ink-soft);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+  .number { text-align: right; white-space: nowrap; }
+  .highlight-row { background: #f2f9f4; }
+
+  .mini-panel,
+  .benefit-item,
+  .notice-item {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface-soft);
+  }
+
+  .mini-panel h3,
+  .benefit-item h3,
+  .notice-item h3 {
+    margin-bottom: 7px;
+    font-size: 15px;
+  }
+
+  .mini-panel p,
+  .benefit-item p,
+  .notice-item p {
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .benefit-item {
+    border-top: 3px solid var(--green);
+  }
+
+  .risk-item { border-top-color: var(--gold); }
+
+  .check-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .check-option {
+    min-height: 48px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface-soft);
+    color: var(--ink);
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .check-option input {
+    width: 17px;
+    height: 17px;
+    margin-top: 2px;
+    accent-color: var(--green);
+    flex: 0 0 auto;
+  }
+
+  .eligibility-box {
+    margin-top: 22px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--blue);
+    border-radius: 7px;
+    background: var(--blue-soft);
+  }
+
+  .eligibility-box.pass {
+    border-left-color: var(--green);
+    background: var(--green-soft);
+  }
+
+  .eligibility-box.fail {
+    border-left-color: var(--red);
+    background: var(--red-soft);
+  }
+
+  .eligibility-title {
+    font-size: 23px;
+    font-weight: 700;
+  }
+
+  .eligibility-summary {
+    margin-top: 3px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .reason-list {
+    margin: 14px 0 0 20px;
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  .reason-list li { margin: 5px 0; }
+
+  .timeline {
+    display: grid;
+    gap: 0;
+  }
+
+  .timeline-item {
+    padding: 0 0 20px 28px;
+    position: relative;
+    border-left: 2px solid #b9d4c3;
+  }
+
+  .timeline-item:last-child { padding-bottom: 0; }
+
+  .timeline-item::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    top: 4px;
+    left: -7px;
+    border: 3px solid white;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 1px #8ab59a;
+  }
+
+  .timeline-date {
+    color: var(--green-dark);
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .timeline-item h3 {
+    margin: 2px 0 4px;
+    font-size: 15px;
+  }
+
+  .timeline-item p {
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .source-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .source-link {
+    min-height: 44px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface-soft);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 13px;
+  }
+
+  .source-link:hover {
+    border-color: #8bb89c;
+    color: var(--green-dark);
+  }
+
+  .source-link span:last-child { color: var(--green); font-weight: 700; }
 
   footer {
+    padding: 30px 20px;
+    color: var(--ink-soft);
     text-align: center;
-    padding: 36px 20px 28px;
-    color: var(--b-ink-soft);
     font-size: 12px;
-    line-height: 1.9;
+    line-height: 1.8;
   }
 
-  @media (max-width: 700px) {
-    .card { padding: 24px 18px; }
-    .panel-title { font-size: 22px; }
-    .row, .actions, .result-grid { grid-template-columns: 1fr; }
-    .result-big { font-size: 36px; }
-    .rent-row { grid-template-columns: 44px 1fr 1fr 34px; gap: 8px; }
-    .rent-row .field label { font-size: 12px; }
-    header { padding: 14px 16px; gap: 10px; }
-    header .logo { width: 46px; height: 46px; }
-    header h1 { font-size: 16px; letter-spacing: 0.5px; }
-    header .subtitle { display: none; }
-    .compare { font-size: 12px; }
-    .compare th, .compare td { padding: 9px 6px; }
+  @media (max-width: 820px) {
+    .grid-3, .benefit-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 680px) {
+    header { min-height: 72px; padding: 12px 14px; }
+    .logo { width: 46px; height: 46px; }
+    header h1 { font-size: 16px; }
+    .header-meta { font-size: 10px; }
+    .container { margin: 18px auto; padding: 0 12px; }
+    .workspace { padding: 22px 15px; }
+    .version-bar { align-items: flex-start; flex-direction: column; gap: 7px; }
+    .panel-title { font-size: 21px; }
+    .grid-2,
+    .grid-3,
+    .result-grid,
+    .benefit-grid,
+    .notice-grid,
+    .actions,
+    .check-grid {
+      grid-template-columns: 1fr;
+    }
+    .rent-row {
+      grid-template-columns: 38px minmax(0, 1fr) 92px 36px;
+      gap: 7px;
+      padding: 8px;
+    }
+    .rent-no { height: 44px; }
+    .rent-row label { font-size: 11px; }
+    .rent-row .hint { display: none; }
+    .result-big { font-size: 34px; }
+    .tab { padding: 9px 13px; font-size: 13px; }
   }
 </style>
 </head>
@@ -421,263 +678,888 @@
 
 <header>
   <div class="logo"><img src="assets/lingxiang-logo.png" alt="嶺翔團隊 Logo"></div>
-  <h1>公益出租人租賃所得簡易試算</h1>
-  <div class="subtitle">PUBLIC LANDLORD · TAX</div>
+  <div class="header-copy">
+    <h1>桃園租屋與社會住宅試算工具</h1>
+    <div class="header-meta">TAOYUAN HOUSING · LANDLORD &amp; TENANT</div>
+  </div>
 </header>
 
-<div class="container">
-  <nav class="tabs" id="tabs">
-    <button class="tab active" data-target="p-calc">🏛 所得試算</button>
-    <button class="tab" data-target="p-formula">📐 公式說明</button>
-    <button class="tab" data-target="p-note">📌 注意事項</button>
+<main class="container">
+  <div class="version-bar">
+    <span>房東稅務、社宅包租代管與房客資格的一站式初步判斷</span>
+    <span class="version-badge">資料基準：2026-07-25</span>
+  </div>
+
+  <nav class="tabs" id="tabs" aria-label="工具功能">
+    <button class="tab active" data-target="p-landlord">房東試算</button>
+    <button class="tab" data-target="p-compare">方案比較</button>
+    <button class="tab" data-target="p-tenant">房客資格</button>
+    <button class="tab" data-target="p-notice">租屋注意</button>
+    <button class="tab" data-target="p-update">最新政策</button>
   </nav>
 
-  <div class="card">
-    <section class="panel active" id="p-calc">
-      <h2 class="panel-title">公益出租人節稅試算</h2>
-      <p class="panel-sub">依原 Excel「公益出租人租賃所得簡易計算表」邏輯製作，最多可輸入 15 筆租金。</p>
+  <div class="workspace">
+    <section class="panel active" id="p-landlord">
+      <div class="panel-head">
+        <h2 class="panel-title">房東稅務與方案試算</h2>
+        <p class="panel-sub">比較一般出租、公益出租人及社宅包租代管的所得稅與桃園地方稅差異。</p>
+      </div>
 
-      <div class="row single">
+      <div class="grid-2">
         <div class="field">
-          <label>綜合所得淨額 <span class="hint">不含下列租賃所得，元</span></label>
+          <label for="netIncome">綜合所得淨額 <span class="hint">未包含下列租賃所得，元</span></label>
           <input type="number" id="netIncome" value="0" min="0" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="generalHouseRate">一般出租房屋稅率 <span class="hint">依全國持有戶數選擇</span></label>
+          <select id="generalHouseRate">
+            <option value="0.015">1.5%：全國持有4戶以內</option>
+            <option value="0.02">2.0%：全國持有5至6戶</option>
+            <option value="0.024">2.4%：全國持有7戶以上</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="houseValue">房屋課稅現值 <span class="hint">房屋稅單上的房屋現值，元</span></label>
+          <input type="number" id="houseValue" value="0" min="0" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="landValue">課稅地價 <span class="hint">地價稅單上的課稅地價，元</span></label>
+          <input type="number" id="landValue" value="0" min="0" inputmode="decimal">
         </div>
       </div>
 
-      <div class="info">請在下方輸入每筆物件的<strong>每月租金</strong>與<strong>出租期間</strong>。公益出租免稅額依原表設定為每月租金與 15,000 元取低值。</div>
+      <div class="info">
+        綜所稅採114年度、2026年申報級距；一般出租與公益出租人的標準必要費用率以43%估算，社宅包租及代管以60%估算。一般地價稅先用第一級10‰粗估，實際仍會受所有土地總地價與累進級距影響。
+      </div>
 
+      <h3 class="section-title">出租明細</h3>
       <div class="rent-list" id="rentList"></div>
 
       <div class="actions">
-        <button class="submit secondary" type="button" onclick="addRentRow()">新增一筆租金</button>
-        <button class="submit" type="button" onclick="calculate()">開始試算</button>
+        <button class="secondary-btn" type="button" onclick="addRentRow()">新增一筆租金</button>
+        <button class="primary-btn" type="button" onclick="calculateLandlord()">重新試算</button>
       </div>
 
-      <div class="result show" id="result">
-        <div class="result-headline">預估節稅利益</div>
-        <div class="result-big"><span id="saving">0</span><span class="unit">元</span></div>
-        <div class="result-note" id="summaryNote">輸入租金後會即時更新試算結果。</div>
+      <div class="result-box" id="landlordResult">
+        <div class="result-headline">加入社宅包租代管後的預估年度稅負差額</div>
+        <div class="result-big"><span id="bestSaving">0</span><span class="unit">元</span></div>
+        <div class="result-note" id="landlordSummary">輸入租金與課稅資料後會即時更新。</div>
+
         <div class="result-grid">
-          <div class="result-item"><span class="k">公益出租人租賃所得</span><span class="v" id="publicRentIncome">0 元</span></div>
-          <div class="result-item"><span class="k">一般租賃所得</span><span class="v" id="normalRentIncome">0 元</span></div>
-          <div class="result-item"><span class="k">公益出租人應納稅額</span><span class="v" id="publicTax">0 元</span></div>
-          <div class="result-item"><span class="k">非公益出租人應納稅額</span><span class="v" id="normalTax">0 元</span></div>
+          <div class="result-item"><span class="key">一般出租年度稅負</span><span class="value" id="generalTotalTax">0 元</span></div>
+          <div class="result-item"><span class="key">公益出租人年度稅負</span><span class="value" id="publicTotalTax">0 元</span></div>
+          <div class="result-item"><span class="key">社宅包租／代管年度稅負</span><span class="value" id="socialTotalTax">0 元</span></div>
+          <div class="result-item"><span class="key">公益出租相較一般節省</span><span class="value" id="publicSaving">0 元</span></div>
         </div>
 
-        <table class="compare" aria-label="公益出租人與非公益出租人試算比較">
+        <h3 class="section-title">四種出租方式比較</h3>
+        <div class="table-wrap">
+          <table class="tax-table" aria-label="出租方案稅負比較">
+            <thead>
+              <tr>
+                <th>出租方式</th>
+                <th class="number">租賃所得</th>
+                <th class="number">所得稅</th>
+                <th class="number">房屋稅</th>
+                <th class="number">地價稅</th>
+                <th class="number">年度合計</th>
+                <th class="number">較一般節省</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>一般出租</td>
+                <td class="number" id="generalRentalIncome">0</td>
+                <td class="number" id="generalIncomeTax">0</td>
+                <td class="number" id="generalHouseTax">0</td>
+                <td class="number" id="generalLandTax">0</td>
+                <td class="number" id="generalTaxTotal">0</td>
+                <td class="number">—</td>
+              </tr>
+              <tr>
+                <td>公益出租人</td>
+                <td class="number" id="publicRentalIncome">0</td>
+                <td class="number" id="publicIncomeTax">0</td>
+                <td class="number" id="publicHouseTax">0</td>
+                <td class="number" id="publicLandTax">0</td>
+                <td class="number" id="publicTaxTotal">0</td>
+                <td class="number" id="publicTaxSaving">0</td>
+              </tr>
+              <tr class="highlight-row">
+                <td>社宅包租</td>
+                <td class="number" id="packageRentalIncome">0</td>
+                <td class="number" id="packageIncomeTax">0</td>
+                <td class="number" id="packageHouseTax">0</td>
+                <td class="number" id="packageLandTax">0</td>
+                <td class="number" id="packageTaxTotal">0</td>
+                <td class="number" id="packageTaxSaving">0</td>
+              </tr>
+              <tr class="highlight-row">
+                <td>社宅代管</td>
+                <td class="number" id="agencyRentalIncome">0</td>
+                <td class="number" id="agencyIncomeTax">0</td>
+                <td class="number" id="agencyHouseTax">0</td>
+                <td class="number" id="agencyLandTax">0</td>
+                <td class="number" id="agencyTaxTotal">0</td>
+                <td class="number" id="agencyTaxSaving">0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="warning">
+        本試算只比較新增租賃所得造成的綜所稅差額，以及輸入房屋現值、課稅地價後的地方稅粗估；未納入免稅額、扣除額、列舉修繕費、基本所得額、租金議價或其他所得。
+      </div>
+    </section>
+
+    <section class="panel" id="p-compare">
+      <div class="panel-head">
+        <h2 class="panel-title">出租方案完整比較</h2>
+        <p class="panel-sub">公益出租人不等於社宅包租代管；兩者都有稅務優惠，但服務、契約與限制不同。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="scheme-table" aria-label="一般出租、公益出租與社宅包租代管比較">
           <thead>
             <tr>
-              <th>身分</th>
-              <th>租賃所得</th>
-              <th>含租賃所得淨額</th>
-              <th>稅率</th>
-              <th>累進差額</th>
-              <th>應納稅額</th>
+              <th>比較項目</th>
+              <th>一般出租</th>
+              <th>公益出租人</th>
+              <th>社宅包租</th>
+              <th>社宅代管</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>非公益出租人</td>
-              <td id="normalLease">0</td>
-              <td id="normalTotal">0</td>
-              <td id="normalRate">5%</td>
-              <td id="normalDiff">0</td>
-              <td id="normalTaxTable">0</td>
+              <td>成立方式</td>
+              <td>房東自行出租</td>
+              <td>出租給符合租金補貼資格的房客，經政府認定</td>
+              <td>業者向房東承租，再轉租給合格房客</td>
+              <td>房東與房客簽租約，業者媒合並管理</td>
             </tr>
             <tr>
-              <td>公益出租人</td>
-              <td id="publicLease">0</td>
-              <td id="publicTotal">0</td>
-              <td id="publicRate">5%</td>
-              <td id="publicDiff">0</td>
-              <td id="publicTaxTable">0</td>
+              <td>每屋每月租金免稅</td>
+              <td>無</td>
+              <td>最高15,000元</td>
+              <td>最高15,000元</td>
+              <td>最高15,000元</td>
+            </tr>
+            <tr>
+              <td>超過免稅額的必要費用率</td>
+              <td>43%估算</td>
+              <td>43%估算</td>
+              <td>60%估算</td>
+              <td>60%估算</td>
+            </tr>
+            <tr>
+              <td>桃園房屋稅</td>
+              <td>符合申報租賃所得者約1.5%至2.4%</td>
+              <td>1.2%</td>
+              <td>1.2%</td>
+              <td>1.2%</td>
+            </tr>
+            <tr>
+              <td>桃園地價稅</td>
+              <td>一般用地累進，第一級10‰</td>
+              <td>符合規定可按2‰</td>
+              <td>符合規定可按2‰</td>
+              <td>符合規定可按2‰</td>
+            </tr>
+            <tr>
+              <td>專業租務管理</td>
+              <td>無</td>
+              <td>無</td>
+              <td>業者負責轉租與管理</td>
+              <td>業者媒合、收租協助與租後管理</td>
+            </tr>
+            <tr>
+              <td>修繕補助</td>
+              <td>無固定補助</td>
+              <td>無固定補助</td>
+              <td>依方案及房客身分，每年約8,000至15,000元</td>
+              <td>依方案及房客身分，每年約8,000至15,000元</td>
+            </tr>
+            <tr>
+              <td>其他補助</td>
+              <td>無</td>
+              <td>無</td>
+              <td>居家安全險最高3,500元／年</td>
+              <td>居家安全險及公證費3,000至9,000元／件</td>
+            </tr>
+            <tr>
+              <td>租金及租期限制</td>
+              <td>依市場及契約</td>
+              <td>依市場及契約</td>
+              <td>桃園第五期簽約租金總價不得超過35,000元／月，可簽3年</td>
+              <td>桃園第五期簽約租金總價不得超過35,000元／月，可簽3年</td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <h3 class="section-title">加入社會住宅的主要優點</h3>
+      <div class="benefit-grid">
+        <article class="benefit-item">
+          <h3>稅負更低</h3>
+          <p>每屋每月15,000元免稅，超過部分可按60%必要費用率估算，另有房屋稅與地價稅優惠。</p>
+        </article>
+        <article class="benefit-item">
+          <h3>減少管理負擔</h3>
+          <p>由合格租屋服務業者處理招租、資格審查、契約與租後管理，降低房東自行處理糾紛的時間成本。</p>
+        </article>
+        <article class="benefit-item">
+          <h3>修繕與安全補助</h3>
+          <p>第五期優先改善住警器、滅火器及熱水器等安全設備，符合條件可申請修繕與居家安全險補助。</p>
+        </article>
+        <article class="benefit-item">
+          <h3>租期更穩定</h3>
+          <p>第五期放寬代管案可簽3年；包租由業者承租後轉租，房東的收租對象較單純，仍以契約內容為準。</p>
+        </article>
+        <article class="benefit-item">
+          <h3>房客有支持系統</h3>
+          <p>業者會協助房客資格、租金補貼與關懷服務，弱勢、高齡或身障住戶較容易連結社福資源。</p>
+        </article>
+        <article class="benefit-item">
+          <h3>合法透明</h3>
+          <p>租約、租金與稅務資料透明化，房東可依法享優惠，也降低未申報租賃所得的後續風險。</p>
+        </article>
+      </div>
+
+      <h3 class="section-title">加入前要接受的條件</h3>
+      <div class="benefit-grid">
+        <article class="benefit-item risk-item">
+          <h3>房屋須符合用途</h3>
+          <p>原則上須為合法住宅用途、一門牌一戶，不得以違法隔間方式分租；部分商業用途須提出住家課稅等證明。</p>
+        </article>
+        <article class="benefit-item risk-item">
+          <h3>租金受評定與上限約束</h3>
+          <p>業者會依租金水準區間評估，桃園第五期簽約租金總價上限為每月35,000元，未必等同房東期待的市場租金。</p>
+        </article>
+        <article class="benefit-item risk-item">
+          <h3>提前終約可能繳回補助</h3>
+          <p>簽約後提前退出，可能須按規定繳回修繕、保險或其他補助；房屋出售也要遵守買賣不破租賃。</p>
+        </article>
+      </div>
+
+      <h3 class="section-title">包租與代管怎麼選</h3>
+      <div class="grid-2">
+        <article class="mini-panel">
+          <h3>包租包管</h3>
+          <p>房東與業者簽包租契約，業者再轉租給房客。適合重視收租對象單純、希望把日常管理交給業者的房東；實際租金、空置與修繕責任仍須看契約。</p>
+        </article>
+        <article class="mini-panel">
+          <h3>代租代管</h3>
+          <p>房東直接與房客簽租約，業者負責媒合及管理。房東保留較直接的租賃關係，但也要承擔契約中的出租人責任及部分收租風險。</p>
+        </article>
+      </div>
     </section>
 
-    <section class="panel" id="p-formula">
-      <h2 class="panel-title">公式說明</h2>
-      <p class="panel-sub">這裡保留 Excel 原本邏輯，方便你跟客戶解釋差異。</p>
-      <div class="formula">
-        <div class="formula-title">PUBLIC LANDLORD</div>
-        <div class="formula-body">
-          公益出租人租賃所得 = <code>(每月租金 − min(每月租金, 15,000))</code> × <code>出租月數</code> × <code>(1 − 43%)</code>
+    <section class="panel" id="p-tenant">
+      <div class="panel-head">
+        <h2 class="panel-title">桃園第五期房客資格初判</h2>
+        <p class="panel-sub">依115年5月13日第二版申請須知與115年度住宅資源門檻初步判斷。</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="field">
+          <label>中華民國國民並在國內設籍</label>
+          <div class="seg" data-group="citizen">
+            <button type="button" class="active" data-value="yes">是</button>
+            <button type="button" data-value="no">否</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="tenantAge">申請人年齡</label>
+          <input type="number" id="tenantAge" value="30" min="0" max="120" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="tenantOccupation">政策職業</label>
+          <select id="tenantOccupation">
+            <option value="none">無</option>
+            <option value="police">基層警消（警正四階以下或相當職務）</option>
+            <option value="nurse">護理師</option>
+            <option value="bus">公車司機</option>
+            <option value="socialworker">社會工作師</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="householdCount">家庭成員人數 <span class="hint">包含符合定義的配偶、直系親屬及胎兒</span></label>
+          <input type="number" id="householdCount" value="1" min="1" max="30" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="householdAnnualIncome">家庭年所得總額 <span class="hint">元</span></label>
+          <input type="number" id="householdAnnualIncome" value="0" min="0" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="monthlyRent">預計簽約月租總價 <span class="hint">元</span></label>
+          <input type="number" id="monthlyRent" value="0" min="0" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="movableAssets">家庭動產總額 <span class="hint">存款、投資、有價證券等，元</span></label>
+          <input type="number" id="movableAssets" value="0" min="0" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="realEstateValue">家庭不動產總額 <span class="hint">元</span></label>
+          <input type="number" id="realEstateValue" value="0" min="0" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>基北北桃竹竹有不符例外的自有住宅</label>
+          <div class="seg" data-group="hasHome">
+            <button type="button" class="active" data-value="no">沒有</button>
+            <button type="button" data-value="yes">有</button>
+          </div>
         </div>
       </div>
-      <div class="formula">
-        <div class="formula-title">NORMAL LANDLORD</div>
-        <div class="formula-body">
-          一般租賃所得 = <code>每月租金</code> × <code>出租月數</code> × <code>(1 − 43%)</code>
+
+      <h3 class="section-title">符合的身分類別</h3>
+      <div class="check-grid">
+        <label class="check-option"><input type="checkbox" id="statusVulnerable">住宅法規定的經濟或社會弱勢身分</label>
+        <label class="check-option"><input type="checkbox" id="statusNewlywed">申請日前2年內的新婚家庭</label>
+        <label class="check-option"><input type="checkbox" id="statusMinorChild">育有至少1名未成年子女</label>
+        <label class="check-option"><input type="checkbox" id="statusThreeGen">戶籍符合三代同堂</label>
+        <label class="check-option"><input type="checkbox" id="statusExpiring">政府興建社宅租期屆滿前6個月</label>
+        <label class="check-option"><input type="checkbox" id="statusSpecialMinor">符合特殊未成年申請情形</label>
+        <label class="check-option"><input type="checkbox" id="statusIndigenousException">原住民自有住宅距租屋處20公里以上等例外</label>
+        <label class="check-option"><input type="checkbox" id="statusSwap">65歲以上／原住民55歲以上或特定身障換居戶</label>
+        <label class="check-option"><input type="checkbox" id="statusDisaster">受災戶或海砂屋等專案情形</label>
+      </div>
+
+      <div class="grid-2" style="margin-top:16px">
+        <div class="field">
+          <label>目前領取其他租金補貼或承租其他社宅</label>
+          <div class="seg" data-group="otherSubsidy">
+            <button type="button" class="active" data-value="no">沒有</button>
+            <button type="button" data-value="yes">有</button>
+          </div>
         </div>
       </div>
-      <div class="formula">
-        <div class="formula-title">TAX</div>
-        <div class="formula-body">
-          應納稅額 = <code>max(0, rounddown(含租賃所得淨額 × 適用稅率 − 累進差額))</code>
+
+      <div class="actions">
+        <button class="primary-btn" type="button" onclick="evaluateTenant()">檢查初步資格</button>
+        <button class="secondary-btn" type="button" onclick="resetTenant()">清除重填</button>
+      </div>
+
+      <div class="eligibility-box" id="eligibilityBox">
+        <div class="eligibility-title" id="eligibilityTitle">等待輸入資料</div>
+        <div class="eligibility-summary" id="eligibilitySummary">完成欄位後按「檢查初步資格」。</div>
+        <div class="result-grid" style="margin-top:12px">
+          <div class="result-item"><span class="key">每人每月平均所得</span><span class="value" id="averageMonthlyIncome">0 元</span></div>
+          <div class="result-item"><span class="key">一般所得門檻</span><span class="value">低於 50,304 元</span></div>
+          <div class="result-item"><span class="key">家庭動產門檻</span><span class="value">低於 4,790,000 元</span></div>
+          <div class="result-item"><span class="key">家庭不動產門檻</span><span class="value">低於 7,050,000 元</span></div>
         </div>
+        <ul class="reason-list" id="eligibilityReasons"></ul>
+      </div>
+
+      <div class="warning">
+        政策職業的申請人可免符合年齡及所得、動產、不動產限制，但仍須符合設籍、住宅等其他條件並提出在職證明。換居、原住民住宅例外、受災戶及特殊未成年人必須由業者或桃園市政府個案審查。
       </div>
     </section>
 
-    <section class="panel" id="p-note">
-      <h2 class="panel-title">注意事項</h2>
-      <p class="panel-sub">這份 HTML 是從你提供的 Excel 轉成網頁版，不是新版法規查詢工具。</p>
-      <div class="judge">
-        <strong>試算基準</strong>
-        原表註明依 112 年度，也就是與 111 年度相同的課稅級距，以及夫妻各類所得合併方式做簡易估算。
+    <section class="panel" id="p-notice">
+      <div class="panel-head">
+        <h2 class="panel-title">房東與房客注意事項</h2>
+        <p class="panel-sub">簽約前把權利義務寫清楚，比事後處理租賃糾紛更省成本。</p>
       </div>
-      <div class="judge">
-        <strong>使用邊界</strong>
-        綜合所得稅實際會受到免稅額、扣除額、基本所得額與其他所得類別影響，本工具只適合做公益出租租賃所得差異的快速估算。
+
+      <h3 class="section-title">房東應注意</h3>
+      <div class="notice-grid">
+        <article class="notice-item">
+          <h3>使用官方租約</h3>
+          <p>採用最新住宅租賃定型化契約，寫清楚租期、租金、押金、水電、管理費、設備清冊及提前終約方式。</p>
+        </article>
+        <article class="notice-item">
+          <h3>不能禁止租金補貼</h3>
+          <p>租約不得記載房客不得申請租金補貼，也不能用不當調漲租金或任意提前解約阻止申請。</p>
+        </article>
+        <article class="notice-item">
+          <h3>修繕責任先約明</h3>
+          <p>房屋及設備原則由房東修繕；若損壞可歸責房客，才由房客負責。設備現況最好拍照並列入點交表。</p>
+        </article>
+        <article class="notice-item">
+          <h3>如實申報租賃所得</h3>
+          <p>一般出租、公益出租及包租代管的申報代號與必要費用率不同，應保存租約、租金及修繕資料。</p>
+        </article>
+        <article class="notice-item">
+          <h3>電費計收須透明</h3>
+          <p>按用電度數計費時不得超過電費單當期每度平均電價，公共設施電費未依法分攤者不得另收。</p>
+        </article>
+        <article class="notice-item">
+          <h3>出售不代表租約消失</h3>
+          <p>社宅包租代管期間出售住宅，須通知業者並遵守買賣不破租賃原則，由新所有權人承受租約。</p>
+        </article>
       </div>
-      <div class="judge">
-        <strong>正式申報</strong>
-        實際金額仍應以國稅局或稽徵機關核定為準；若要對外公開使用，建議再確認當年度級距與公益出租人免稅額規定。
+
+      <h3 class="section-title">房客應注意</h3>
+      <div class="notice-grid">
+        <article class="notice-item">
+          <h3>確認出租權限</h3>
+          <p>核對房東身分與所有權；由代理人或業者簽約時，要查看授權書與租賃住宅服務業資格。</p>
+        </article>
+        <article class="notice-item">
+          <h3>押金最多兩個月</h3>
+          <p>住宅租賃押金最高不得超過兩個月租金，退租時要完成點交並確認押金扣款明細。</p>
+        </article>
+        <article class="notice-item">
+          <h3>保留付款與報修紀錄</h3>
+          <p>租金盡量轉帳並保留收據；漏水、設備損壞等問題應立即以可留存的方式通知房東或業者。</p>
+        </article>
+        <article class="notice-item">
+          <h3>資格變動要主動告知</h3>
+          <p>所得、家庭成員、住宅持有或補貼狀態改變，應依方案規定通知業者，避免日後被追回補助。</p>
+        </article>
+        <article class="notice-item">
+          <h3>補貼原則上不能重複</h3>
+          <p>加入包租代管前若已領其他租金補貼或承租其他社宅，通常須切結放棄原住宅資源後才能起租。</p>
+        </article>
+        <article class="notice-item">
+          <h3>注意共住責任</h3>
+          <p>共住住宅若有人中途搬離，其餘承租人可能須重新分擔租金並重簽契約，簽約前要先談清楚。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="p-update">
+      <div class="panel-head">
+        <h2 class="panel-title">社會住宅第五期最新整理</h2>
+        <p class="panel-sub">以下以中央與桃園市政府公開資料為主，資料查核至2026年7月25日。</p>
+      </div>
+
+      <div class="success-note">
+        桃園第五期自2026年1月7日接續辦理，規劃媒合5,000戶；最新第二版申請須知已把社會工作師納入政策職業。
+      </div>
+
+      <div class="timeline">
+        <article class="timeline-item">
+          <div class="timeline-date">2025-10-01</div>
+          <h3>中央包租代管5.0啟動</h3>
+          <p>國家住宅及都市更新中心率先開辦第五期，弱勢戶房東修繕獎勵提高、代管案可簽3年，並新增長者與身障者換居支持。</p>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">2026-01-07</div>
+          <h3>桃園第五期接續辦理</h3>
+          <p>桃園市由七家租屋服務業者辦理房東開發、房客媒合、資格送審及租後管理。</p>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">2026-01-18</div>
+          <h3>桃園公布5,000戶計畫</h3>
+          <p>總經費約7.2億元，中央補助約5.8億元、桃園自籌約1.4億元，優先服務青年、新婚、育兒、三代同堂及特定職業等政策戶。</p>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">2026-06-02</div>
+          <h3>新增社會工作師政策戶</h3>
+          <p>社工與符合條件的警消、護理師、公車司機相同，可免符合年齡及所得、動產、不動產限額，但其他資格仍須審查。</p>
+        </article>
+        <article class="timeline-item">
+          <div class="timeline-date">2026-07-24</div>
+          <h3>桃園申請文件頁更新</h3>
+          <p>房東、房客申請書與115年5月13日第二版申請須知仍為目前應優先查核的正式文件。</p>
+        </article>
+      </div>
+
+      <h3 class="section-title">官方資料來源</h3>
+      <div class="source-list">
+        <a class="source-link" href="https://ohd.tycg.gov.tw/cp.aspx?n=8624" target="_blank" rel="noopener">
+          <span>桃園市社會住宅包租代管簡介與第五期業者</span><span>開啟</span>
+        </a>
+        <a class="source-link" href="https://ohd.tycg.gov.tw/News_Content.aspx?n=8648&amp;s=879307" target="_blank" rel="noopener">
+          <span>桃園第五期申請須知、房東與房客表單</span><span>開啟</span>
+        </a>
+        <a class="source-link" href="https://sab.tycg.gov.tw/News_Content.aspx?n=7300&amp;s=1634028&amp;sms=11858" target="_blank" rel="noopener">
+          <span>2026年6月新增社會工作師政策戶公告</span><span>開啟</span>
+        </a>
+        <a class="source-link" href="https://www.nlma.gov.tw/ch/titlelist/news/16708" target="_blank" rel="noopener">
+          <span>國土署包租代管5.0加碼措施</span><span>開啟</span>
+        </a>
+        <a class="source-link" href="https://www.nlma.gov.tw/ch/titlelist/news/17321" target="_blank" rel="noopener">
+          <span>包租、代管與公益出租人最新報稅代號</span><span>開啟</span>
+        </a>
+        <a class="source-link" href="https://tytax.tycg.gov.tw/News_Content.aspx?n=4478&amp;s=1468772&amp;sms=10276" target="_blank" rel="noopener">
+          <span>桃園市115年房屋稅率說明</span><span>開啟</span>
+        </a>
+        <a class="source-link" href="https://www.moi.gov.tw/News_Content.aspx?n=145&amp;s=280625" target="_blank" rel="noopener">
+          <span>住宅租約不得禁止申請租金補貼</span><span>開啟</span>
+        </a>
+        <a class="source-link" href="https://www.fountmedia.io/article/59846" target="_blank" rel="noopener">
+          <span>參考文章：公益出租人節稅觀念（2020，數字需以現行規定為準）</span><span>開啟</span>
+        </a>
+      </div>
+
+      <div class="warning">
+        政策、所得與財產門檻可能隨年度或修正版公告調整。本工具不會取代政府審查；正式申請前請由第五期委辦業者或桃園市住宅發展及都市更新處再次確認。
       </div>
     </section>
   </div>
-</div>
+</main>
 
 <footer>
-  © 2026 公益出租人租賃所得簡易試算｜僅供參考，實際金額以稽徵機關核定為準
+  © 2026 桃園租屋與社會住宅試算工具<br>
+  僅供政策理解與初步試算，正式資格、稅額與補助以主管機關核定為準。
 </footer>
 
 <script>
   const MAX_ROWS = 15;
-  const EXEMPTION_LIMIT = 15000;
-  const EXPENSE_RATE = 0.43;
+  const RENT_EXEMPTION = 15000;
+  const STANDARD_EXPENSE_RATE = 0.43;
+  const SOCIAL_EXPENSE_RATE = 0.60;
+  const PUBLIC_HOUSE_RATE = 0.012;
+  const GENERAL_LAND_RATE = 0.01;
+  const PUBLIC_LAND_RATE = 0.002;
+  const TENANT_MONTHLY_INCOME_LIMIT = 50304;
+  const TENANT_MOVABLE_LIMIT = 4790000;
+  const TENANT_REAL_ESTATE_LIMIT = 7050000;
+  const SOCIAL_RENT_LIMIT = 35000;
 
-  document.querySelectorAll('#tabs .tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('#tabs .tab').forEach(x => x.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById(tab.dataset.target).classList.add('active');
+  document.querySelectorAll("#tabs .tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll("#tabs .tab").forEach(item => item.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(panel => panel.classList.remove("active"));
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.target).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
 
-  function fmt(n, d = 0) {
-    if (!Number.isFinite(n)) return '0';
-    return Math.round(n).toLocaleString('zh-TW', { minimumFractionDigits: d, maximumFractionDigits: d });
+  document.querySelectorAll(".seg").forEach(group => {
+    group.addEventListener("click", event => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      group.querySelectorAll("button").forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+      if (group.dataset.group && ["citizen", "hasHome", "otherSubsidy"].includes(group.dataset.group)) {
+        evaluateTenant(false);
+      }
+    });
+  });
+
+  function getSegmentValue(groupName) {
+    const active = document.querySelector(`.seg[data-group="${groupName}"] button.active`);
+    return active ? active.dataset.value : "";
   }
 
-  function roundDown(n) {
-    return Math.floor(Number.isFinite(n) ? n : 0);
+  function setSegmentValue(groupName, value) {
+    const group = document.querySelector(`.seg[data-group="${groupName}"]`);
+    if (!group) return;
+    group.querySelectorAll("button").forEach(button => {
+      button.classList.toggle("active", button.dataset.value === value);
+    });
+  }
+
+  function safeNumber(id) {
+    const value = Number(document.getElementById(id).value);
+    return Number.isFinite(value) ? Math.max(0, value) : 0;
+  }
+
+  function fmt(value) {
+    const number = Number.isFinite(value) ? Math.round(value) : 0;
+    return number.toLocaleString("zh-TW");
+  }
+
+  function roundDown(value) {
+    return Math.floor(Number.isFinite(value) ? value : 0);
   }
 
   function getTaxInfo(income) {
-    if (income < 560001) return { rate: 0.05, diff: 0 };
-    if (income < 1260001) return { rate: 0.12, diff: 39200 };
-    if (income < 2520001) return { rate: 0.20, diff: 140000 };
-    if (income < 4720001) return { rate: 0.30, diff: 392000 };
-    return { rate: 0.40, diff: 864000 };
+    if (income <= 590000) return { rate: 0.05, difference: 0 };
+    if (income <= 1330000) return { rate: 0.12, difference: 41300 };
+    if (income <= 2660000) return { rate: 0.20, difference: 147700 };
+    if (income <= 4980000) return { rate: 0.30, difference: 413700 };
+    return { rate: 0.40, difference: 911700 };
   }
 
-  function taxableAmount(income) {
+  function incomeTax(income) {
     const taxInfo = getTaxInfo(income);
-    return Math.max(0, roundDown(income * taxInfo.rate - taxInfo.diff));
+    return Math.max(0, roundDown(income * taxInfo.rate - taxInfo.difference));
   }
 
   function addRentRow(monthlyRent = 0, months = 0) {
-    const list = document.getElementById('rentList');
+    const list = document.getElementById("rentList");
     if (list.children.length >= MAX_ROWS) {
-      alert('原試算表最多 15 筆租金明細');
+      alert("最多可輸入15筆租金明細");
       return;
     }
 
-    const index = list.children.length + 1;
-    const row = document.createElement('div');
-    row.className = 'rent-row';
+    const row = document.createElement("div");
+    row.className = "rent-row";
     row.innerHTML = `
-      <div class="rent-no">${index}</div>
+      <div class="rent-no">${list.children.length + 1}</div>
       <div class="field">
         <label>每月租金 <span class="hint">元</span></label>
         <input type="number" class="rent-input" value="${monthlyRent}" min="0" inputmode="decimal">
       </div>
       <div class="field">
-        <label>出租期間 <span class="hint">月</span></label>
+        <label>出租月數</label>
         <input type="number" class="month-input" value="${months}" min="0" max="12" step="1" inputmode="numeric">
       </div>
-      <button class="icon-btn" type="button" aria-label="刪除此筆" onclick="removeRentRow(this)">×</button>
+      <button class="icon-btn" type="button" title="刪除此筆" aria-label="刪除此筆" onclick="removeRentRow(this)">×</button>
     `;
-    row.querySelectorAll('input').forEach(input => input.addEventListener('input', calculate));
+    row.querySelectorAll("input").forEach(input => input.addEventListener("input", calculateLandlord));
     list.appendChild(row);
     renumberRows();
-    calculate();
+    calculateLandlord();
   }
 
   function removeRentRow(button) {
-    const list = document.getElementById('rentList');
-    if (list.children.length <= 1) {
-      list.querySelector('.rent-input').value = 0;
-      list.querySelector('.month-input').value = 0;
+    const list = document.getElementById("rentList");
+    if (list.children.length === 1) {
+      list.querySelector(".rent-input").value = 0;
+      list.querySelector(".month-input").value = 0;
     } else {
-      button.closest('.rent-row').remove();
+      button.closest(".rent-row").remove();
     }
     renumberRows();
-    calculate();
+    calculateLandlord();
   }
 
   function renumberRows() {
-    document.querySelectorAll('.rent-no').forEach((node, idx) => {
-      node.textContent = idx + 1;
+    document.querySelectorAll(".rent-no").forEach((number, index) => {
+      number.textContent = index + 1;
     });
   }
 
-  function collectRows() {
-    return [...document.querySelectorAll('.rent-row')].map(row => {
-      const rent = Math.max(0, Number(row.querySelector('.rent-input').value) || 0);
-      const monthsRaw = Number(row.querySelector('.month-input').value) || 0;
-      const months = Math.min(12, Math.max(0, Math.trunc(monthsRaw)));
-      row.querySelector('.month-input').value = months;
+  function collectRentRows() {
+    return [...document.querySelectorAll(".rent-row")].map(row => {
+      const rentInput = row.querySelector(".rent-input");
+      const monthInput = row.querySelector(".month-input");
+      const rent = Math.max(0, Number(rentInput.value) || 0);
+      const months = Math.min(12, Math.max(0, Math.trunc(Number(monthInput.value) || 0)));
+      monthInput.value = months;
       return { rent, months };
     });
   }
 
-  function calculate() {
-    const netIncome = Math.max(0, Number(document.getElementById('netIncome').value) || 0);
-    const rows = collectRows();
+  function calculateRentalIncome(rows, type) {
+    return rows.reduce((total, row) => {
+      if (type === "general") {
+        return total + roundDown(row.rent * row.months * (1 - STANDARD_EXPENSE_RATE));
+      }
 
-    let publicRent = 0;
-    let normalRent = 0;
-    rows.forEach(({ rent, months }) => {
-      const exemptAmount = Math.min(rent, EXEMPTION_LIMIT);
-      publicRent += roundDown((rent - exemptAmount) * months * (1 - EXPENSE_RATE));
-      normalRent += roundDown(rent * months * (1 - EXPENSE_RATE));
-    });
-
-    const normalTotal = netIncome + normalRent;
-    const publicTotal = netIncome + publicRent;
-    const normalInfo = getTaxInfo(normalTotal);
-    const publicInfo = getTaxInfo(publicTotal);
-    const normalTaxValue = taxableAmount(normalTotal);
-    const publicTaxValue = taxableAmount(publicTotal);
-    const saving = normalTaxValue - publicTaxValue;
-
-    document.getElementById('saving').textContent = fmt(saving);
-    document.getElementById('summaryNote').textContent = saving > 0
-      ? `本次估算公益出租人較一般出租人少繳約 ${fmt(saving)} 元。`
-      : '目前輸入條件下，公益出租與一般出租估算稅額相同。';
-    document.getElementById('publicRentIncome').textContent = `${fmt(publicRent)} 元`;
-    document.getElementById('normalRentIncome').textContent = `${fmt(normalRent)} 元`;
-    document.getElementById('publicTax').textContent = `${fmt(publicTaxValue)} 元`;
-    document.getElementById('normalTax').textContent = `${fmt(normalTaxValue)} 元`;
-
-    document.getElementById('normalLease').textContent = fmt(normalRent);
-    document.getElementById('normalTotal').textContent = fmt(normalTotal);
-    document.getElementById('normalRate').textContent = `${normalInfo.rate * 100}%`;
-    document.getElementById('normalDiff').textContent = fmt(normalInfo.diff);
-    document.getElementById('normalTaxTable').textContent = fmt(normalTaxValue);
-
-    document.getElementById('publicLease').textContent = fmt(publicRent);
-    document.getElementById('publicTotal').textContent = fmt(publicTotal);
-    document.getElementById('publicRate').textContent = `${publicInfo.rate * 100}%`;
-    document.getElementById('publicDiff').textContent = fmt(publicInfo.diff);
-    document.getElementById('publicTaxTable').textContent = fmt(publicTaxValue);
+      const taxableRent = Math.max(0, row.rent - RENT_EXEMPTION);
+      const expenseRate = type === "social" ? SOCIAL_EXPENSE_RATE : STANDARD_EXPENSE_RATE;
+      return total + roundDown(taxableRent * row.months * (1 - expenseRate));
+    }, 0);
   }
 
-  document.getElementById('netIncome').addEventListener('input', calculate);
+  function setText(id, value) {
+    document.getElementById(id).textContent = value;
+  }
+
+  function calculateLandlord() {
+    const netIncome = safeNumber("netIncome");
+    const houseValue = safeNumber("houseValue");
+    const landValue = safeNumber("landValue");
+    const generalHouseRate = Number(document.getElementById("generalHouseRate").value) || 0.015;
+    const rows = collectRentRows();
+
+    const generalRental = calculateRentalIncome(rows, "general");
+    const publicRental = calculateRentalIncome(rows, "public");
+    const socialRental = calculateRentalIncome(rows, "social");
+
+    const baseTax = incomeTax(netIncome);
+    const generalIncomeTax = incomeTax(netIncome + generalRental) - baseTax;
+    const publicIncomeTax = incomeTax(netIncome + publicRental) - baseTax;
+    const socialIncomeTax = incomeTax(netIncome + socialRental) - baseTax;
+
+    const generalHouseTax = roundDown(houseValue * generalHouseRate);
+    const publicHouseTax = roundDown(houseValue * PUBLIC_HOUSE_RATE);
+    const generalLandTax = roundDown(landValue * GENERAL_LAND_RATE);
+    const publicLandTax = roundDown(landValue * PUBLIC_LAND_RATE);
+
+    const generalTotal = generalIncomeTax + generalHouseTax + generalLandTax;
+    const publicTotal = publicIncomeTax + publicHouseTax + publicLandTax;
+    const socialTotal = socialIncomeTax + publicHouseTax + publicLandTax;
+    const publicTaxSaving = Math.max(0, generalTotal - publicTotal);
+    const socialTaxSaving = Math.max(0, generalTotal - socialTotal);
+
+    setText("bestSaving", fmt(socialTaxSaving));
+    setText(
+      "landlordSummary",
+      socialTaxSaving > 0
+        ? `相同租金條件下，社宅包租／代管的預估年度稅負比一般出租少約 ${fmt(socialTaxSaving)} 元。`
+        : "目前輸入條件下尚未產生可比較的稅負差額。"
+    );
+    setText("generalTotalTax", `${fmt(generalTotal)} 元`);
+    setText("publicTotalTax", `${fmt(publicTotal)} 元`);
+    setText("socialTotalTax", `${fmt(socialTotal)} 元`);
+    setText("publicSaving", `${fmt(publicTaxSaving)} 元`);
+
+    const values = {
+      generalRentalIncome: generalRental,
+      generalIncomeTax,
+      generalHouseTax,
+      generalLandTax,
+      generalTaxTotal: generalTotal,
+      publicRentalIncome: publicRental,
+      publicIncomeTax,
+      publicHouseTax,
+      publicLandTax,
+      publicTaxTotal: publicTotal,
+      publicTaxSaving,
+      packageRentalIncome: socialRental,
+      packageIncomeTax: socialIncomeTax,
+      packageHouseTax: publicHouseTax,
+      packageLandTax: publicLandTax,
+      packageTaxTotal: socialTotal,
+      packageTaxSaving: socialTaxSaving,
+      agencyRentalIncome: socialRental,
+      agencyIncomeTax: socialIncomeTax,
+      agencyHouseTax: publicHouseTax,
+      agencyLandTax: publicLandTax,
+      agencyTaxTotal: socialTotal,
+      agencyTaxSaving: socialTaxSaving
+    };
+
+    Object.entries(values).forEach(([id, value]) => setText(id, fmt(value)));
+  }
+
+  function checked(id) {
+    return document.getElementById(id).checked;
+  }
+
+  function policyOccupationName(value) {
+    const names = {
+      police: "基層警消",
+      nurse: "護理師",
+      bus: "公車司機",
+      socialworker: "社會工作師"
+    };
+    return names[value] || "";
+  }
+
+  function evaluateTenant(showPlaceholder = true) {
+    const citizen = getSegmentValue("citizen") === "yes";
+    const hasHome = getSegmentValue("hasHome") === "yes";
+    const otherSubsidy = getSegmentValue("otherSubsidy") === "yes";
+    const age = safeNumber("tenantAge");
+    const householdCount = Math.max(1, Math.trunc(safeNumber("householdCount")));
+    document.getElementById("householdCount").value = householdCount;
+    const annualIncome = safeNumber("householdAnnualIncome");
+    const movableAssets = safeNumber("movableAssets");
+    const realEstateValue = safeNumber("realEstateValue");
+    const monthlyRent = safeNumber("monthlyRent");
+    const occupation = document.getElementById("tenantOccupation").value;
+    const occupationExempt = occupation !== "none";
+    const averageMonthly = annualIncome / 12 / householdCount;
+
+    const specialIdentity =
+      checked("statusVulnerable") ||
+      checked("statusNewlywed") ||
+      checked("statusMinorChild") ||
+      checked("statusThreeGen") ||
+      checked("statusExpiring") ||
+      checked("statusSpecialMinor");
+
+    const manualHousingException =
+      checked("statusIndigenousException") ||
+      checked("statusSwap") ||
+      checked("statusDisaster");
+
+    const ageOrIdentityPass = occupationExempt || (age >= 18 && age <= 45) || specialIdentity;
+    const incomePass = occupationExempt || averageMonthly < TENANT_MONTHLY_INCOME_LIMIT;
+    const movablePass = occupationExempt || movableAssets < TENANT_MOVABLE_LIMIT;
+    const realEstatePass = occupationExempt || realEstateValue < TENANT_REAL_ESTATE_LIMIT;
+    const housingPass = !hasHome || manualHousingException;
+    const rentPass = monthlyRent === 0 || monthlyRent <= SOCIAL_RENT_LIMIT;
+
+    const failures = [];
+    const reviews = [];
+    const positives = [];
+
+    if (!citizen) failures.push("申請人須為中華民國國民並在國內設有戶籍。");
+    if (!ageOrIdentityPass) failures.push("年齡超過45歲，且未勾選符合的弱勢、婚育、三代同堂或其他政策身分。");
+    if (!incomePass) failures.push(`每人每月平均所得 ${fmt(averageMonthly)} 元，未低於 50,304 元門檻。`);
+    if (!movablePass) failures.push(`家庭動產 ${fmt(movableAssets)} 元，未低於 4,790,000 元門檻。`);
+    if (!realEstatePass) failures.push(`家庭不動產 ${fmt(realEstateValue)} 元，未低於 7,050,000 元門檻。`);
+    if (!housingPass) failures.push("家庭成員在基北北桃竹竹持有不符例外的住宅。");
+    if (!rentPass) failures.push(`預計月租 ${fmt(monthlyRent)} 元，高於桃園第五期每月 35,000 元上限。`);
+
+    if (occupationExempt) {
+      positives.push(`${policyOccupationName(occupation)}可免符合年齡及所得、動產、不動產限額，但仍須提出在職證明。`);
+    } else if (age >= 18 && age <= 45) {
+      positives.push("申請人年齡符合45歲以下政策戶條件。");
+    } else if (specialIdentity) {
+      positives.push("已勾選至少一項可取代45歲以下年齡條件的政策或弱勢身分。");
+    }
+
+    if (manualHousingException) reviews.push("住宅持有例外、換居或受災情形須由業者及桃園市政府審認。");
+    if (otherSubsidy) reviews.push("目前已有其他住宅補貼；起租前通常須切結放棄原補貼，不能重複領取。");
+    if (checked("statusSpecialMinor")) reviews.push("特殊未成年人須檢附安置、監護、懷孕或生育困境等證明。");
+    if (monthlyRent === 0) reviews.push("尚未填寫預計月租，媒合物件仍須符合35,000元上限。");
+
+    setText("averageMonthlyIncome", `${fmt(averageMonthly)} 元`);
+
+    const box = document.getElementById("eligibilityBox");
+    const title = document.getElementById("eligibilityTitle");
+    const summary = document.getElementById("eligibilitySummary");
+    const list = document.getElementById("eligibilityReasons");
+    box.className = "eligibility-box";
+
+    if (failures.length > 0) {
+      box.classList.add("fail");
+      title.textContent = "目前可能不符合";
+      summary.textContent = "下列條件至少有一項未通過，仍可洽委辦業者確認是否有專案例外。";
+    } else if (reviews.length > 0) {
+      title.textContent = "條件大致符合，需人工確認";
+      summary.textContent = "基本門檻未發現明顯不符，但有例外、補貼轉換或待補資料項目。";
+    } else {
+      box.classList.add("pass");
+      title.textContent = "初步符合桃園第五期資格";
+      summary.textContent = "基本身分、所得、財產、住宅與租金門檻均通過初步檢查。";
+    }
+
+    const messages = [...failures, ...reviews, ...positives];
+    list.innerHTML = messages.map(message => `<li>${message}</li>`).join("");
+
+    if (!showPlaceholder && annualIncome === 0 && monthlyRent === 0 && !specialIdentity && !occupationExempt) {
+      summary.textContent = "結果會隨輸入即時更新；正式送件仍由委辦業者初審、桃園市政府複審。";
+    }
+  }
+
+  function resetTenant() {
+    document.getElementById("tenantAge").value = 30;
+    document.getElementById("tenantOccupation").value = "none";
+    document.getElementById("householdCount").value = 1;
+    document.getElementById("householdAnnualIncome").value = 0;
+    document.getElementById("monthlyRent").value = 0;
+    document.getElementById("movableAssets").value = 0;
+    document.getElementById("realEstateValue").value = 0;
+    document.querySelectorAll("#p-tenant input[type='checkbox']").forEach(input => {
+      input.checked = false;
+    });
+    setSegmentValue("citizen", "yes");
+    setSegmentValue("hasHome", "no");
+    setSegmentValue("otherSubsidy", "no");
+    const box = document.getElementById("eligibilityBox");
+    box.className = "eligibility-box";
+    setText("eligibilityTitle", "等待輸入資料");
+    setText("eligibilitySummary", "完成欄位後按「檢查初步資格」。");
+    setText("averageMonthlyIncome", "0 元");
+    document.getElementById("eligibilityReasons").innerHTML = "";
+  }
+
+  ["netIncome", "houseValue", "landValue"].forEach(id => {
+    document.getElementById(id).addEventListener("input", calculateLandlord);
+  });
+  document.getElementById("generalHouseRate").addEventListener("change", calculateLandlord);
+
+  [
+    "tenantAge",
+    "tenantOccupation",
+    "householdCount",
+    "householdAnnualIncome",
+    "monthlyRent",
+    "movableAssets",
+    "realEstateValue"
+  ].forEach(id => {
+    document.getElementById(id).addEventListener("input", () => evaluateTenant(false));
+    document.getElementById(id).addEventListener("change", () => evaluateTenant(false));
+  });
+
+  document.querySelectorAll("#p-tenant input[type='checkbox']").forEach(input => {
+    input.addEventListener("change", () => evaluateTenant(false));
+  });
+
   addRentRow(0, 12);
 </script>
 
